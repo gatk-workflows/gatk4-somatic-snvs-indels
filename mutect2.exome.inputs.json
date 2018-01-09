@@ -64,6 +64,6 @@
   "##_Mutect2.CollectSequencingArtifactMetrics.mem": "(optional) Int?",
 
   "##_COMMENT9": "Malicious.",
-  "##_Mutect2.MergeBamOuts.preemptible_attempts": "(optional) Int?"
+  "##_Mutect2.MergeBamOuts.preemptible_attempts": "(optional) Int?",
   "Mutect2.preemptible_attempts": 3
 }
