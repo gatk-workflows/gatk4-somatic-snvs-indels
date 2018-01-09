@@ -38,7 +38,7 @@
   "Mutect2.onco_ds_tar_gz": "gs://gatk-best-practices/somatic-b37/oncotator_v1_ds_April052016.tar.gz",
   "Mutect2.default_config_file": "gs://gatk-best-practices/somatic-b37/onco_config.txt",
   "##_Mutect2.sequencing_center": "(optional) String?",
-  "##_Mutect2.sequence_source": "(optional) String?"
+  "##_Mutect2.sequence_source": "(optional) String?",
 
   "##_COMMENT6": "Disk space",
   "##_Mutect2.MergeVCFs.disk_space_gb": "(optional) Int?",
@@ -65,5 +65,5 @@
 
   "##_COMMENT9": "Malicious.",
   "##_Mutect2.MergeBamOuts.preemptible_attempts": "(optional) Int?"
-  "Mutect2.preemptible_attempts": 3,
+  "Mutect2.preemptible_attempts": 3
 }
