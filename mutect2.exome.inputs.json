@@ -2,7 +2,7 @@
   "##_COMMENT1": "Runtime",
   "Mutect2.gatk4_jar": "/root/gatk.jar",
   "Mutect2.picard_jar": "gs://gatk-software/picard-2.10.0/picard.jar",
-  "Mutect2.m2_docker": "broadinstitute/gatk:4.beta.3",
+  "Mutect2.m2_docker": "broadinstitute/gatk:4.beta.6",
   "Mutect2.oncotator_docker": "broadinstitute/oncotator:1.9.3.0",
   "Mutect2.gatk_docker": "broadinstitute/gatk:4.0.0.0",
 
