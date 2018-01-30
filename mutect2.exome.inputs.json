@@ -11,8 +11,8 @@
   "Mutect2.artifact_modes": ["G/T", "C/T"],
   "##_Mutect2.m2_extra_args": "(optional) String?",
   "##_Mutect2.m2_extra_filtering_args": "(optional) String?",
-  "Mutect2.is_run_orientation_bias_filter": "False",
-  "Mutect2.is_run_oncotator": "False",
+  "Mutect2.is_run_orientation_bias_filter": "True",
+  "Mutect2.is_run_oncotator": "True",
 
   "##_COMMENT3": "Primary inputs",
   "Mutect2.ref_fasta": "gs://gatk-best-practices/somatic-b37/Homo_sapiens_assembly19.fasta",
