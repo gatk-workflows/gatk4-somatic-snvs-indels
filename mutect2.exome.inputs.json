@@ -2,7 +2,6 @@
   "##_COMMENT1": "Runtime",
   "Mutect2.gatk4_jar": "/root/gatk.jar",
   "Mutect2.picard_jar": "gs://gatk-software/picard-2.10.0/picard.jar",
-  "Mutect2.m2_docker": "broadinstitute/gatk:4.beta.6",
   "Mutect2.oncotator_docker": "broadinstitute/oncotator:1.9.3.0",
   "Mutect2.gatk_docker": "broadinstitute/gatk:4.0.0.0",
 
@@ -12,8 +11,8 @@
   "Mutect2.artifact_modes": ["G/T", "C/T"],
   "##_Mutect2.m2_extra_args": "(optional) String?",
   "##_Mutect2.m2_extra_filtering_args": "(optional) String?",
-  "Mutect2.is_run_orientation_bias_filter": "True",
-  "Mutect2.is_run_oncotator": "True",
+  "Mutect2.is_run_orientation_bias_filter": "False",
+  "Mutect2.is_run_oncotator": "False",
 
   "##_COMMENT3": "Primary inputs",
   "Mutect2.ref_fasta": "gs://gatk-best-practices/somatic-b37/Homo_sapiens_assembly19.fasta",
