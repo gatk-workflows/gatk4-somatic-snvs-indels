@@ -61,7 +61,7 @@
   "##_Mutect2.gatk4_override": "(optional) File?",
   "##_Mutect2.CollectSequencingArtifactMetrics.mem": "(optional) Int?",
 
-  "##_COMMENT9": "Malicious.",
+  "##_COMMENT9": "Misc.",
   "##_Mutect2.MergeBamOuts.preemptible_attempts": "(optional) Int?",
   "Mutect2.preemptible_attempts": 3
 }
