@@ -698,9 +698,9 @@ task Filter {
         export GATK_LOCAL_JAR=${default="/root/gatk.jar" gatk_override}
 
         gatk --java-options "-Xmx${command_mem}m" FilterMutectCalls -V ${unfiltered_vcf} \
-				    -O ${output_vcf} \
-				    ${"--contamination-table " + contamination_table} \
-				    ${m2_extra_filtering_args}
+      	    -O ${output_vcf} \
+      	    ${"--contamination-table " + contamination_table} \
+      	    ${m2_extra_filtering_args}
     }
 
     runtime {
@@ -947,4 +947,3 @@ task Funcotate {
         File funcotated_vcf_index = "${output_vcf_index}"
     }
 }
-
