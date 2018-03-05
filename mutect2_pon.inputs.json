@@ -55,7 +55,7 @@
 
   "##_COMMENT7": "Disk space",
   "##_Mutect2_Panel.Mutect2.emergency_extra_disk": "(optional) Int?",
-  "##_Mutect2_Panel.CreatePanel.disk_space": "(optional) Int?"
+  "##_Mutect2_Panel.CreatePanel.disk_space": "(optional) Int?",
 
   "##_COMMENT8": "Preemptibles",
   "##_Mutect2_Panel.preemptible_attempts": "(optional) Int?",
