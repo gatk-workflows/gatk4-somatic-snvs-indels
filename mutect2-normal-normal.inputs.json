@@ -1,0 +1,39 @@
+{
+  "##_COMMENT1": "Inputs",
+  "Mutect2NormalNormal.bams": [
+    "gs://broad-public-datasets/NA12878_replicates/SM-612VD.bam",
+    "gs://broad-public-datasets/NA12878_replicates/SM-612V7.bam",
+    "gs://broad-public-datasets/NA12878_replicates/SM-612V6.bam",
+    "gs://broad-public-datasets/NA12878_replicates/SM-612V5.bam",
+    "gs://broad-public-datasets/NA12878_replicates/SM-612V4.bam",
+    "gs://broad-public-datasets/NA12878_replicates/SM-612V3.bam"
+  ],
+  "Mutect2NormalNormal.bais": [
+    "gs://broad-public-datasets/NA12878_replicates/SM-612VD.bai",
+    "gs://broad-public-datasets/NA12878_replicates/SM-612V7.bai",
+    "gs://broad-public-datasets/NA12878_replicates/SM-612V6.bai",
+    "gs://broad-public-datasets/NA12878_replicates/SM-612V5.bai",
+    "gs://broad-public-datasets/NA12878_replicates/SM-612V4.bai",
+    "gs://broad-public-datasets/NA12878_replicates/SM-612V3.bai"
+  ],
+
+  "##_COMMENT2": "Reference",
+  "Mutect2NormalNormal.ref_fasta": "gs://gatk-best-practices/somatic-b37/Homo_sapiens_assembly19.fasta",
+  "Mutect2NormalNormal.ref_dict": "gs://gatk-best-practices/somatic-b37/Homo_sapiens_assembly19.dict",
+  "Mutect2NormalNormal.ref_fai": "gs://gatk-best-practices/somatic-b37/Homo_sapiens_assembly19.fasta.fai",
+  
+  "##_COMMENT3": "Resources",
+  "Mutect2NormalNormal.pon": "gs://gatk-test-data/mutect2/normal-normal-validation/CRSP_ICE_406_gatk_plus_targeted.vcf",
+  "Mutect2NormalNormal.pon_index": "gs://gatk-test-data/mutect2/normal-normal-validation/CRSP_ICE_406_gatk_plus_targeted.vcf.idx",
+  "Mutect2NormalNormal.gnomad": "gs://gatk-best-practices/somatic-b37/af-only-gnomad.raw.sites.vcf",
+  "Mutect2NormalNormal.gnomad_index": "gs://gatk-best-practices/somatic-b37/af-only-gnomad.raw.sites.vcf.idx",
+  "Mutect2NormalNormal.intervals": "gs://gatk-best-practices/somatic-b37/whole_exome_agilent_1.1_refseq_plus_3_boosters.Homo_sapiens_assembly19.baits.interval_list",
+  "Mutect2NormalNormal.m2_extra_args": "--af-of-alleles-not-in-resource 0.00000003 --downsampling-stride 20 --max-reads-per-alignment-start 6 --max-suspicious-reads-per-alignment-start 6",
+  "Mutect2NormalNormal.variants_for_contamination": "gs://gatk-best-practices/somatic-b37/small_exac_common_3.vcf",
+  "Mutect2NormalNormal.variants_for_contamination_index": "gs://gatk-best-practices/somatic-b37/small_exac_common_3.vcf.idx",
+  "Mutect2NormalNormal.scatter_count": "10",
+
+  "##_COMMENT4": "Docker",
+  "Mutect2NormalNormal.gatk_docker": "broadinstitute/gatk:4.0.3.0"
+}
+

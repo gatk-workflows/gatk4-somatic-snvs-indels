@@ -4,7 +4,7 @@
 Workflows for somatic short variant analysis with GATK4. 
 
 ### mutect2 :
-Implements Somatic short variant discovery using [GATK Best Practices](https://software.broadinstitute.org/gatk/best-practices/workflow) (June 2016).
+Implements Somatic short variant discovery using [GATK Best Practices](https://software.broadinstitute.org/gatk/best-practices/workflow).
 
 
 #### Requirements/expectations
@@ -26,7 +26,16 @@ Creates a Panel of Norms to be implemented in somatic short variant discovery.
 #### Outputs 
 - PON vcf and index
 - Normal calls vcf and index
-       
+
+### mutect2-normal-normal :
+Used to validate mutect2 workflow.
+
+#### Requirements/expectations
+- One analysis-ready BAM file (and its index) for each replicate
+
+#### Outputs
+- False Positive VCF files and its index with summary  
+     
 ### Software version requirements :
 - GATK4 or later 
 
