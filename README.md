@@ -37,7 +37,7 @@ Cromwell version support
 ### Parameter descriptions :
 #### mutect2 (single pair/sample)  
 
-``Mutect2.gatk4_jar`` -- Location within the docker file of the GATK4 jar file. If you wish you to use a different jar file, such as one on your local filesystem or a google bucket, specify that location with Mutect2_Multi.gatk4_jar_override. This parameter is ignored if Mutect2_Multi.gatk4_jar_override is specified. 
+``Mutect2.gatk4_jar`` -- Location within the docker file of the GATK4 jar file. If you wish you to use a different jar file, such as one on your local filesystem or a google bucket, specify that location with Mutect2_Multi.gatk4_jar_override. This parameter is ignored if Mutect2_Multi.gatk4_jar_override is specified. Running local version of the tool requires the `gatk` executable to be included in your $PATH. 
 ``Mutect2.intervals`` -- A file listing genomic intervals to search for somatic mutations. This should be in the standard GATK4 format. 
 ``Mutect2.ref_fasta`` -- reference fasta. For Broad internal VM: /seq/references/Homo_sapiens_assembly19/v1/Homo_sapiens_assembly19.fasta 
 ``Mutect2.ref_fasta_index`` -- For Broad internal VM: /seq/references/Homo_sapiens_assembly19/v1/Homo_sapiens_assembly19.fasta.fai 
