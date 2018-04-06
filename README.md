@@ -4,7 +4,7 @@
 Workflows for somatic short variant analysis with GATK4. 
 
 ### mutect2 :
-Implements Somatic short variant discovery using [GATK Best Practices](https://software.broadinstitute.org/gatk/best-practices/workflow) (June 2016).
+Implements Somatic short variant discovery using [GATK Best Practices](https://software.broadinstitute.org/gatk/best-practices/workflow).
 
 
 #### Requirements/expectations
@@ -26,7 +26,16 @@ Creates a Panel of Norms to be implemented in somatic short variant discovery.
 #### Outputs 
 - PON vcf and index
 - Normal calls vcf and index
-       
+
+### mutect2-normal-normal :
+Used to validate mutect2 workflow.
+
+#### Requirements/expectations
+- One analysis-ready BAM file (and its index) for each replicate
+
+#### Outputs
+- False Positive VCF files and its index with summary  
+     
 ### Software version requirements :
 - GATK4 or later 
 
@@ -36,6 +45,7 @@ Cromwell version support
 
 ### Parameter descriptions :
 #### mutect2 (single pair/sample)  
+
 
 ``Mutect2.gatk4_jar`` -- Location within the docker file of the GATK4 jar file. If you wish you to use a different jar file, such as one on your local filesystem or a google bucket, specify that location with Mutect2_Multi.gatk4_jar_override. This parameter is ignored if Mutect2_Multi.gatk4_jar_override is specified. Running local version of the tool requires the `gatk` executable to be included in your $PATH. 
 ``Mutect2.intervals`` -- A file listing genomic intervals to search for somatic mutations. This should be in the standard GATK4 format. 
