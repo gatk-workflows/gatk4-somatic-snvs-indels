@@ -3,6 +3,10 @@
 ## This WDL workflow runs GATK4 Mutect 2 on a single tumor-normal pair or on a single tumor sample,
 ## and performs additional filtering and functional annotation tasks.
 ##
+## NOTE: this wdl is an exact copy of mutect2.wdl in the gatk repo except for replacing File with String in GATK task inputs in order to
+## avoid localizing files in cromwell and thereby allowing the GATK engine to access cloud-based files with NIO.  Once
+## cromwell supports "smart" File variables that know when and when not to localize the two wdls should be merged.
+##
 ## Main requirements/expectations :
 ## - One analysis-ready BAM file (and its index) for each sample
 ##
@@ -33,9 +37,9 @@
 ## normal_bam, normal_bam_index: BAM and index for the normal sample
 ##
 ## ** Primary resources ** (optional but strongly recommended)
-## pon, pon_index: optional panel of normals in VCF format containing probable technical artifacts (false positves)
-## gnomad, gnomad_index: optional database of known germline variants (see http://gnomad.broadinstitute.org/downloads)
-## variants_for_contamination, variants_for_contamination_index: VCF of common variants with allele frequencies for calculating contamination
+## pon: optional panel of normals in VCF format containing probable technical artifacts (false positves)
+## gnomad: optional database of known germline variants (see http://gnomad.broadinstitute.org/downloads)
+## variants_for_contamination: VCF of common variants with allele frequencies for calculating contamination
 ##
 ## ** Secondary resources ** (for optional tasks)
 ## onco_ds_tar_gz, default_config_file: Oncotator datasources and config file
@@ -47,7 +51,7 @@
 ##   file of reassembled reads if requested
 ##
 ## Cromwell version support
-## - Successfully tested on v29
+## - Successfully tested on v30
 ##
 ## LICENSING :
 ## This script is released under the WDL source code license (BSD-3) (see LICENSE in
@@ -67,12 +71,9 @@ workflow Mutect2 {
     File? normal_bam
     File? normal_bai
     File? pon
-    File? pon_index
     Int scatter_count
     File? gnomad
-    File? gnomad_index
     File? variants_for_contamination
-    File? variants_for_contamination_index
     Boolean? run_orientation_bias_filter
     Boolean run_ob_filter = select_first([run_orientation_bias_filter, false])
     Array[String]? artifact_modes
@@ -85,7 +86,6 @@ workflow Mutect2 {
     Boolean? compress_vcfs
     Boolean compress = select_first([compress_vcfs, false])
     File? gga_vcf
-    File? gga_vcf_idx
 
     # oncotator inputs
     Boolean? run_oncotator
@@ -125,7 +125,7 @@ workflow Mutect2 {
     # Disk sizes used for dynamic sizing
     Int ref_size = ceil(size(ref_fasta, "GB") + size(ref_dict, "GB") + size(ref_fai, "GB"))
     Int tumor_bam_size = ceil(size(tumor_bam, "GB") + size(tumor_bai, "GB"))
-    Int gnomad_vcf_size = if defined(gnomad) then ceil(size(gnomad, "GB") + size(gnomad_index, "GB")) else 0
+    Int gnomad_vcf_size = if defined(gnomad) then ceil(size(gnomad, "GB")) else 0
     Int normal_bam_size = if defined(normal_bam) then ceil(size(normal_bam, "GB") + size(normal_bai, "GB")) else 0
 
     # If no tar is provided, the task downloads one from broads ftp server
@@ -149,6 +149,9 @@ workflow Mutect2 {
 
     String output_vcf_name = basename(tumor_bam, ".bam") + ".vcf"
 
+    # Size M2 differently based on if we are using NIO or not
+    Int m2_output_size = tumor_bam_size / scatter_count
+    Int m2_per_scatter_size = ((tumor_bam_size + normal_bam_size) / scatter_count) + ref_size + (gnomad_vcf_size / scatter_count) + m2_output_size + disk_pad
 
     call SplitIntervals {
         input:
@@ -164,31 +167,23 @@ workflow Mutect2 {
             disk_space = ref_size + ceil(size(intervals, "GB") * small_input_to_output_multiplier) + disk_pad
     }
 
-    Int m2_output_size = tumor_bam_size / scatter_count
     scatter (subintervals in SplitIntervals.interval_files ) {
         call M2 {
             input:
                 intervals = subintervals,
                 ref_fasta = ref_fasta,
-                ref_fai = ref_fai,
-                ref_dict = ref_dict,
                 tumor_bam = tumor_bam,
-                tumor_bai = tumor_bai,
                 normal_bam = normal_bam,
-                normal_bai = normal_bai,
                 pon = pon,
-                pon_index = pon_index,
                 gnomad = gnomad,
-                gnomad_index = gnomad_index,
                 preemptible_attempts = preemptible_attempts,
                 m2_extra_args = m2_extra_args,
                 make_bamout = make_bamout_or_default,
                 compress = compress,
                 gga_vcf = gga_vcf,
-                gga_vcf_idx = gga_vcf_idx,
                 gatk_override = gatk_override,
                 gatk_docker = gatk_docker,
-                disk_space = tumor_bam_size + normal_bam_size + ref_size + gnomad_vcf_size + m2_output_size + disk_pad
+                disk_space = m2_per_scatter_size
         }
 
         Float sub_vcf_size = size(M2.unfiltered_vcf, "GB")
@@ -253,16 +248,11 @@ workflow Mutect2 {
                 gatk_override = gatk_override,
                 intervals = intervals,
                 ref_fasta = ref_fasta,
-                ref_fai = ref_fai,
-                ref_dict = ref_dict,
                 preemptible_attempts = preemptible_attempts,
                 gatk_docker = gatk_docker,
                 tumor_bam = tumor_bam,
-                tumor_bai = tumor_bai,
                 normal_bam = normal_bam,
-                normal_bai = normal_bai,
                 variants_for_contamination = variants_for_contamination,
-                variants_for_contamination_index = variants_for_contamination_index,
                 disk_space = tumor_bam_size + normal_bam_size + ceil(size(variants_for_contamination, "GB") * small_input_to_output_multiplier) + disk_pad
         }
     }
@@ -273,7 +263,6 @@ workflow Mutect2 {
             gatk_docker = gatk_docker,
             intervals = intervals,
             unfiltered_vcf = MergeVCFs.merged_vcf,
-            unfiltered_vcf_index = MergeVCFs.merged_vcf_index,
             output_name = filtered_name,
             compress = compress,
             preemptible_attempts = preemptible_attempts,
@@ -291,7 +280,6 @@ workflow Mutect2 {
             input:
                 gatk_override = gatk_override,
                 input_vcf = Filter.filtered_vcf,
-                input_vcf_index = Filter.filtered_vcf_index,
                 output_name = filtered_name,
                 compress = compress,
                 gatk_docker = gatk_docker,
@@ -330,8 +318,6 @@ workflow Mutect2 {
                 m2_vcf = funcotate_vcf_input,
                 m2_vcf_index = funcotate_vcf_input_index,
                 ref_fasta = ref_fasta,
-                ref_fai = ref_fai,
-                ref_dict = ref_dict,
                 reference_version = select_first([reference_version, "NO_REFERENCE_VERSION_GIVEN"]),
                 output_name = funcotated_name,
                 compress = compress,
@@ -413,23 +399,17 @@ task SplitIntervals {
 
 task M2 {
     # inputs
-    File? intervals
-    File ref_fasta
-    File ref_fai
-    File ref_dict
-    File tumor_bam
-    File tumor_bai
-    File? normal_bam
-    File? normal_bai
-    File? pon
-    File? pon_index
-    File? gnomad
-    File? gnomad_index
+    String? intervals
+    String ref_fasta
+    String tumor_bam
+    String? normal_bam
+    String? pon
+    String? gnomad
     String? m2_extra_args
     Boolean? make_bamout
     Boolean compress
-    File? gga_vcf
-    File? gga_vcf_idx
+    String? gga_vcf
+    String? gga_vcf_idx
 
     String output_vcf = "output" + if compress then ".vcf.gz" else ".vcf"
     String output_vcf_index = output_vcf + if compress then ".tbi" else ".idx"
@@ -461,7 +441,7 @@ task M2 {
         gatk --java-options "-Xmx${command_mem}m" GetSampleName -R ${ref_fasta} -I ${tumor_bam} -O tumor_name.txt -encode
         tumor_command_line="-I ${tumor_bam} -tumor `cat tumor_name.txt`"
 
-        if [[ -f "${normal_bam}" ]]; then
+        if [[ ! -z "${normal_bam}" ]]; then
             gatk --java-options "-Xmx${command_mem}m" GetSampleName -R ${ref_fasta} -I ${normal_bam} -O normal_name.txt -encode
             normal_command_line="-I ${normal_bam} -normal `cat normal_name.txt`"
         fi
@@ -637,16 +617,11 @@ task CollectSequencingArtifactMetrics {
 
 task CalculateContamination {
     # inputs
-    File? intervals
-    File ref_fasta
-    File ref_fai
-    File ref_dict
-    File tumor_bam
-    File tumor_bai
-    File? normal_bam
-    File? normal_bai
-    File? variants_for_contamination
-    File? variants_for_contamination_index
+    String? intervals
+    String ref_fasta
+    String tumor_bam
+    String? normal_bam
+    String? variants_for_contamination
 
     File? gatk_override
 
@@ -690,9 +665,8 @@ task CalculateContamination {
 
 task Filter {
     # inputs
-    File? intervals
-    File unfiltered_vcf
-    File unfiltered_vcf_index
+    String? intervals
+    String unfiltered_vcf
     String output_name
     Boolean compress
     String output_vcf = output_name + if compress then ".vcf.gz" else ".vcf"
@@ -744,8 +718,7 @@ task Filter {
 task FilterByOrientationBias {
     # input
     File? gatk_override
-    File input_vcf
-    File input_vcf_index
+    String input_vcf
     String output_name
     Boolean compress
     String output_vcf = output_name + if compress then ".vcf.gz" else ".vcf"
@@ -890,11 +863,9 @@ task SumFloats {
 
 task Funcotate {
     # inputs
-    File ref_fasta
-    File ref_fai
-    File ref_dict
-    File m2_vcf
-    File m2_vcf_index
+    String ref_fasta
+    String m2_vcf
+    String m2_vcf_index
     String reference_version
     String output_name
     Boolean compress

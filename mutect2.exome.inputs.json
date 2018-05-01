@@ -1,7 +1,7 @@
 {
   "##_COMMENT1": "Runtime",
   "Mutect2.oncotator_docker": "broadinstitute/oncotator:1.9.6.1",
-  "Mutect2.gatk_docker": "broadinstitute/gatk:4.0.2.0",
+  "Mutect2.gatk_docker": "broadinstitute/gatk:4.0.4.0",
 
   "##_COMMENT2": "Workflow options",
   "Mutect2.intervals": "gs://gatk-best-practices/somatic-b37/whole_exome_agilent_1.1_refseq_plus_3_boosters.Homo_sapiens_assembly19.baits.interval_list",
