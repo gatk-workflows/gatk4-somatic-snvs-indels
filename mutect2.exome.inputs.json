@@ -1,6 +1,6 @@
 {
   "##_COMMENT1": "Runtime",
-  "Mutect2.oncotator_docker": "broadinstitute/oncotator:1.9.6.1",
+  "##Mutect2.oncotator_docker": "(optional) String?",
   "Mutect2.gatk_docker": "broadinstitute/gatk:4.0.4.0",
 
   "##_COMMENT2": "Workflow options",
