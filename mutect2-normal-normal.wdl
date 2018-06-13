@@ -32,13 +32,12 @@ workflow Mutect2NormalNormal {
 	Array[File] bams
 	Array[File] bais
 	File? pon
-	File? pon_index
 	File? gnomad
-	File? gnomad_index
 	File? variants_for_contamination
-    File? variants_for_contamination_index
 	Boolean? run_orientation_bias_filter
 	Array[String]? artifact_modes
+	File? realignment_index_bundle
+    String? realignment_extra_args
 	String? m2_extra_args
     String? m2_extra_filtering_args
     Boolean? make_bamout
@@ -68,15 +67,14 @@ workflow Mutect2NormalNormal {
                     normal_bam = normal_bam,
                     normal_bai = normal_bai,
                     pon = pon,
-                    pon_index = pon_index,
                     scatter_count = scatter_count,
                     gnomad = gnomad,
-                    gnomad_index = gnomad_index,
                     variants_for_contamination = variants_for_contamination,
-                    variants_for_contamination_index = variants_for_contamination_index,
                     run_orientation_bias_filter = run_orientation_bias_filter,
                     preemptible_attempts = preemptible_attempts,
                     artifact_modes = artifact_modes,
+                    realignment_index_bundle = realignment_index_bundle,
+                    realignment_extra_args = realignment_extra_args,
                     m2_extra_args = m2_extra_args,
                     m2_extra_filtering_args = m2_extra_filtering_args,
                     gatk_override = gatk_override,
@@ -155,6 +153,7 @@ task CountFalsePositives {
 
     runtime {
         docker: gatk_docker
+        bootDiskSizeGb: 12
         memory: "5 GB"
         disks: "local-disk " + 500 + " HDD"
     }
