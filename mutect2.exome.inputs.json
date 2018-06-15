@@ -1,7 +1,7 @@
 {
   "##_COMMENT1": "Runtime",
   "##Mutect2.oncotator_docker": "(optional) String?",
-  "Mutect2.gatk_docker": "broadinstitute/gatk:4.0.4.0",
+  "Mutect2.gatk_docker": "broadinstitute/gatk:4.0.5.0",
 
   "##_COMMENT2": "Workflow options",
   "Mutect2.intervals": "gs://gatk-best-practices/somatic-b37/whole_exome_agilent_1.1_refseq_plus_3_boosters.Homo_sapiens_assembly19.baits.interval_list",
@@ -28,6 +28,7 @@
   "Mutect2.gnomad_index": "gs://gatk-best-practices/somatic-b37/af-only-gnomad.raw.sites.vcf.idx",
   "Mutect2.variants_for_contamination": "gs://gatk-best-practices/somatic-b37/small_exac_common_3.vcf",
   "Mutect2.variants_for_contamination_index": "gs://gatk-best-practices/somatic-b37/small_exac_common_3.vcf.idx",
+  "##Mutect2.realignment_index_bundle": "File? (optional)",
 
   "##_COMMENT5": "Secondary resources",
   "Mutect2.onco_ds_tar_gz": "gs://gatk-best-practices/somatic-b37/oncotator_v1_ds_April052016.tar.gz",
