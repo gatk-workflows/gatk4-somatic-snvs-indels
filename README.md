@@ -83,3 +83,7 @@ Cromwell version support
 override:NCBI_Build=37,Strand=+,status=Somatic,phase=Phase_I,sequencer=Illumina,Tumor_Validation_Allele1=,Tumor_Validation_Allele2=,Match_Norm_Validation_Allele1=,Match_Norm_Validation_Allele2=,Verification_Status=,Validation_Status=,Validation_Method=,Score=,BAM_file=,Match_Norm_Seq_Allele1=,Match_Norm_Seq_Allele2=
 ```
 
+### Important Note :
+- Runtime parameters are optimized for Broad's Google Cloud Platform implementation. 
+- For help running workflows on the Google Cloud Platform or locally please
+view the following tutorial [(How to) Execute Workflows from the gatk-workflows Git Organization](https://software.broadinstitute.org/gatk/documentation/article?id=12521)
