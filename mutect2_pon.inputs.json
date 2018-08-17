@@ -1,8 +1,6 @@
 {
   "##_COMMENT1": "Inputs",
-  "##_Mutect2_Panel.Mutect2.normal_bam": "(optional) File?",
-  "##_Mutect2_Panel.Mutect2.normal_bai": "(optional) File?",
-  "Mutect2_Panel.pon_name": "panel_of_normal",
+  "#Mutect2_Panel.pon_name": "panel_of_normal",
   "#Mutect2_Panel.Mutect2.normal_bam": "(optional) File?",
   "#Mutect2_Panel.Mutect2.normal_bai": "(optional) File?",
 
