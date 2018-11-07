@@ -23,8 +23,8 @@
   "Mutect2NormalNormal.ref_fai": "gs://gatk-best-practices/somatic-b37/Homo_sapiens_assembly19.fasta.fai",
   
   "##_COMMENT3": "Resources",
-  "Mutect2NormalNormal.pon": "gs://gatk-test-data/mutect2/normal-normal-validation/CRSP_ICE_406_gatk_plus_targeted.vcf",
-  "Mutect2NormalNormal.pon_index": "gs://gatk-test-data/mutect2/normal-normal-validation/CRSP_ICE_406_gatk_plus_targeted.vcf.idx",
+  "Mutect2NormalNormal.pon": "gs://gatk-best-practices/somatic-b37/Mutect2-exome-panel.vcf",
+  "Mutect2NormalNormal.pon_index": "gs://gatk-best-practices/somatic-b37/Mutect2-exome-panel.vcf.idx",
   "Mutect2NormalNormal.gnomad": "gs://gatk-best-practices/somatic-b37/af-only-gnomad.raw.sites.vcf",
   "Mutect2NormalNormal.gnomad_index": "gs://gatk-best-practices/somatic-b37/af-only-gnomad.raw.sites.vcf.idx",
   "Mutect2NormalNormal.intervals": "gs://gatk-best-practices/somatic-b37/whole_exome_agilent_1.1_refseq_plus_3_boosters.Homo_sapiens_assembly19.baits.interval_list",

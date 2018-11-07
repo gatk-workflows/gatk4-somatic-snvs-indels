@@ -22,8 +22,8 @@
   "Mutect2.tumor_bai": "gs://gatk-best-practices/somatic-b37/HCC1143.bai",
 
   "##_COMMENT4": "Primary resources",
-  "##_Mutect2.pon": "(optional) File?",
-  "##_Mutect2.pon_index": "(optional) File?",
+  "Mutect2.pon": "gs://gatk-best-practices/somatic-b37/Mutect2-exome-panel.vcf",
+  "Mutect2.pon_index": "gs://gatk-best-practices/somatic-b37/Mutect2-exome-panel.vcf.idx",
   "Mutect2.gnomad": "gs://gatk-best-practices/somatic-b37/af-only-gnomad.raw.sites.vcf",
   "Mutect2.gnomad_index": "gs://gatk-best-practices/somatic-b37/af-only-gnomad.raw.sites.vcf.idx",
   "Mutect2.variants_for_contamination": "gs://gatk-best-practices/somatic-b37/small_exac_common_3.vcf",
