@@ -84,6 +84,13 @@ override:NCBI_Build=37,Strand=+,status=Somatic,phase=Phase_I,sequencer=Illumina,
 ```
 
 ### Important Note :
-- Runtime parameters are optimized for Broad's Google Cloud Platform implementation. 
+- Runtime parameters are optimized for Broad's Google Cloud Platform implementation.
 - For help running workflows on the Google Cloud Platform or locally please
-view the following tutorial [(How to) Execute Workflows from the gatk-workflows Git Organization](https://software.broadinstitute.org/gatk/documentation/article?id=12521)
+view the following tutorial [(How to) Execute Workflows from the gatk-workflows Git Organization](https://software.broadinstitute.org/gatk/documentation/article?id=12521).
+- Please post questions to the [GATK forum](https://gatkforums.broadinstitute.org/gatk/categories/ask-the-team).
+- Please visit the [User Guide](https://software.broadinstitute.org/gatk/documentation/) site for furthr documentation on our workflows and tools.
+
+### LICENSING :
+Copyright Broad Institute, 2018 | BSD-3
+
+This script is released under the WDL open source code license (BSD-3) (full license text at https://github.com/openwdl/wdl/blob/master/LICENSE). Note however that the programs it calls may be subject to different licenses. Users are responsible for checking that they are authorized to run all programs before running this script.
