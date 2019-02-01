@@ -14,7 +14,7 @@
 #   this logic *must* go into each task.  Therefore, there is a lot of duplicated code.  This allows users to specify a jar file
 #   independent of what is in the docker file.  See the README.md for more info.
 #
-import "mutect2.wdl" as m2
+import "https://raw.githubusercontent.com/gatk-workflows/gatk4-somatic-snvs-indels/2.3.0/mutect2_nio.wdl" as m2
 
 workflow Mutect2_Panel {
     # inputs
