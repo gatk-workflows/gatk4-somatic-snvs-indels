@@ -91,8 +91,8 @@ override:NCBI_Build=37,Strand=+,status=Somatic,phase=Phase_I,sequencer=Illumina,
 - Runtime parameters are optimized for Broad's Google Cloud Platform implementation.
 - For help running workflows on the Google Cloud Platform or locally please
 view the following tutorial [(How to) Execute Workflows from the gatk-workflows Git Organization](https://software.broadinstitute.org/gatk/documentation/article?id=12521).
-- Please post questions to the [GATK forum](https://gatkforums.broadinstitute.org/gatk/categories/ask-the-team).
-- Please visit the [User Guide](https://software.broadinstitute.org/gatk/documentation/) site for furthr documentation on our workflows and tools.
+- The following material is provided by the GATK Team. Please post any questions or concerns to one of our forum sites : [GATK](https://gatkforums.broadinstitute.org/gatk/categories/ask-the-team/) , [FireCloud](https://gatkforums.broadinstitute.org/firecloud/categories/ask-the-firecloud-team) , [WDL/Cromwell](https://gatkforums.broadinstitute.org/wdl/categories/ask-the-wdl-team).
+- Please visit the [User Guide](https://software.broadinstitute.org/gatk/documentation/) site for further documentation on our workflows and tools.
 
 ### LICENSING :
 Copyright Broad Institute, 2018 | BSD-3
