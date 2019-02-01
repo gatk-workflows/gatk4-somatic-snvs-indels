@@ -26,7 +26,13 @@
 ## artifact_modes: types of artifacts to consider in the orientation bias filter (optional)
 ## m2_extra_args, m2_extra_filtering_args: additional arguments for Mutect2 calling and filtering (optional)
 ## split_intervals_extra_args: additional arguments for splitting intervals before scattering (optional)
-## run_orientation_bias_filter: if true, run the orientation bias filter post-processing step (optional, true by default)
+## run_orientation_bias_filter: (optional) if true, run the orientation bias filter, which is the GATK implementation of
+##         D-ToxoG with modifications to allow multiple artifact modes.
+##         For more information on D-ToxoG, see https://software.broadinstitute.org/cancer/cga/dtoxog
+## run_orientation_bias_mixture_model_filter: (optional) if true, filter orientation bias sites with the read orientation artifact mixture model.
+##         This is the recommended orientation bias filter, particularly for data sequenced on Illumina NovaSeq.
+##         If set to true, artifact_mode will be ignored, as the model learns the artifact modes on its own.
+##         While we offer both options, there's no need to run both the mixture model filter and the one based on D-ToxoG.
 ## run_oncotator: if true, annotate the M2 VCFs using oncotator (to produce a TCGA MAF).  Important:  This requires a
 ##                   docker image and should  not be run in environments where docker is unavailable (e.g. SGE cluster on
 ##                   a Broad on-prem VM).  Access to docker hub is also required, since the task downloads a public docker image.
@@ -55,13 +61,14 @@
 ## funco_data_sources_tar_gz:  Funcotator datasources tar gz file.  Bucket location is recommended when running on the cloud.
 ## funco_annotation_defaults:  Default values for annotations, when values are unspecified.  Specified as  <ANNOTATION>:<VALUE>.  For example:  "Center:Broad"
 ## funco_annotation_overrides:  Values for annotations, even when values are unspecified.  Specified as  <ANNOTATION>:<VALUE>.  For example:  "Center:Broad"
+## funcotator_excluded_fields:  Annotations that should not appear in the output (VCF or MAF).  Specified as  <ANNOTATION>.  For example:  "ClinVar_ALLELEID"
 ##
 ## Outputs :
 ## - One VCF file and its index with primary filtering applied; secondary filtering and functional annotation if requested; a bamout.bam
 ##   file of reassembled reads if requested
 ##
 ## Cromwell version support
-## - Successfully tested on v30
+## - Successfully tested on v34
 ##
 ## LICENSING :
 ## This script is released under the WDL source code license (BSD-3) (see LICENSE in
@@ -89,6 +96,9 @@ workflow Mutect2 {
     Boolean? run_orientation_bias_filter
     Array[String]? artifact_modes
     Boolean run_ob_filter = select_first([run_orientation_bias_filter, true]) && (length(select_first([artifact_modes, ["G/T", "C/T"]])) > 0)
+    Boolean? run_orientation_bias_mixture_model_filter
+    Boolean run_ob_mm_filter = select_first([run_orientation_bias_mixture_model_filter, false])
+    File? ob_mm_filter_training_intervals
     File? tumor_sequencing_artifact_metrics
     String? m2_extra_args
     String? m2_extra_filtering_args
@@ -107,6 +117,7 @@ workflow Mutect2 {
     String? sequencing_center
     String? sequence_source
     File? default_config_file
+    String? oncotator_extra_args
 
     # funcotator inputs
     Boolean? run_funcotator
@@ -117,6 +128,8 @@ workflow Mutect2 {
     File? funco_transcript_selection_list
     Array[String]? funco_annotation_defaults
     Array[String]? funco_annotation_overrides
+    Array[String]? funcotator_excluded_fields
+    String? funcotator_extra_args
 
     File? gatk_override
 
@@ -129,8 +142,6 @@ workflow Mutect2 {
     Boolean filter_oncotator_maf_or_default = select_first([filter_oncotator_maf, true])
     Boolean? filter_funcotations
     Boolean filter_funcotations_or_default = select_first([filter_funcotations, true])
-    String? oncotator_extra_args
-    String? funcotator_extra_args
 
     Int? preemptible_attempts
     Int? max_retries
@@ -197,6 +208,7 @@ workflow Mutect2 {
                 preemptible_attempts = preemptible_attempts,
                 max_retries = max_retries,
                 m2_extra_args = m2_extra_args,
+                artifact_prior_table = LearnReadOrientationModel.artifact_prior_table,
                 make_bamout = make_bamout_or_default,
                 compress = compress,
                 gga_vcf = gga_vcf,
@@ -265,6 +277,35 @@ workflow Mutect2 {
                 disk_space = tumor_bam_size + ref_size + disk_pad
         }
     }
+
+        if (run_ob_mm_filter) {
+            call CollectF1R2Counts {
+                input:
+                    gatk_docker = gatk_docker,
+                    ref_fasta = ref_fasta,
+                    ref_fai = ref_fai,
+                    ref_dict = ref_dict,
+                    preemptible_attempts = preemptible_attempts,
+                    tumor_bam = tumor_bam,
+                    tumor_bai = tumor_bai,
+                    gatk_override = gatk_override,
+                    disk_space = tumor_bam_size + ref_size + disk_pad,
+                    intervals = if defined(ob_mm_filter_training_intervals) then ob_mm_filter_training_intervals else intervals,
+                    max_retries = max_retries
+            }
+
+            call LearnReadOrientationModel {
+                input:
+                    alt_table = CollectF1R2Counts.alt_table,
+                    ref_histogram = CollectF1R2Counts.ref_histogram,
+                    alt_histograms = CollectF1R2Counts.alt_histograms,
+                    tumor_sample = CollectF1R2Counts.tumor_sample,
+                    gatk_override = gatk_override,
+                    gatk_docker = gatk_docker,
+                    preemptible_attempts = preemptible_attempts,
+                    max_retries = max_retries
+            }
+        }
 
     if (defined(variants_for_contamination)) {
         call CalculateContamination {
@@ -373,6 +414,7 @@ workflow Mutect2 {
                 gatk_docker = gatk_docker,
                 gatk_override = gatk_override,
                 filter_funcotations = filter_funcotations_or_default,
+                funcotator_excluded_fields = funcotator_excluded_fields,
                 sequencing_center = sequencing_center,
                 sequence_source = sequence_source,
                 disk_space_gb = ceil(size(funcotate_vcf_input, "GB") * large_input_to_output_multiplier) + funco_tar_size + disk_pad,
@@ -430,7 +472,7 @@ task SplitIntervals {
             -scatter ${scatter_count} \
             -O interval-files \
             ${split_intervals_extra_args}
-        cp interval-files/*.intervals .
+        cp interval-files/*.interval_list .
     }
 
     runtime {
@@ -444,7 +486,7 @@ task SplitIntervals {
     }
 
     output {
-        Array[File] interval_files = glob("*.intervals")
+        Array[File] interval_files = glob("*.interval_list")
     }
 }
 
@@ -461,6 +503,7 @@ task M2 {
     Boolean compress
     String? gga_vcf
     String? gga_vcf_idx
+    File? artifact_prior_table
 
     String output_vcf = "output" + if compress then ".vcf.gz" else ".vcf"
     String output_vcf_index = output_vcf + if compress then ".tbi" else ".idx"
@@ -508,6 +551,7 @@ task M2 {
             ${"--genotyping-mode GENOTYPE_GIVEN_ALLELES --alleles " + gga_vcf} \
             -O "${output_vcf}" \
             ${true='--bam-output bamout.bam' false='' make_bamout} \
+            ${"--orientation-bias-artifact-priors " + artifact_prior_table} \
             ${m2_extra_args}
     >>>
 
@@ -676,6 +720,117 @@ task CollectSequencingArtifactMetrics {
     output {
         File pre_adapter_metrics = "gatk.pre_adapter_detail_metrics"
     }
+}
+
+
+# Data collection step of the orientation bias mixture model, which is the recommended orientation bias filter as of September 2018
+task CollectF1R2Counts {
+    # input
+    File ref_fasta
+    File ref_fai
+    File ref_dict
+    File tumor_bam
+    File tumor_bai
+
+    File? gatk_override
+    File? intervals
+
+    # runtime
+    Int? max_retries
+    String gatk_docker
+    Int? mem
+    Int? preemptible_attempts
+    Int? disk_space
+    Int? cpu
+    Boolean use_ssd = false
+
+    # Mem is in units of GB but our command and memory runtime values are in MB
+    Int machine_mem = if defined(mem) then mem * 1000 else 7000
+    Int command_mem = machine_mem - 1000
+
+    command {
+        set -e
+        export GATK_LOCAL_JAR=${default="/root/gatk.jar" gatk_override}
+
+        # Get the sample name. The task M2 retrieves this information too, but it must be done separately here
+        # to avoid a cyclic dependency
+        gatk --java-options "-Xmx${command_mem}m" GetSampleName -R ${ref_fasta} -I ${tumor_bam} -O tumor_name.txt -encode
+        tumor_name=$(head -n 1 tumor_name.txt)
+
+        gatk --java-options "-Xmx${command_mem}m" CollectF1R2Counts \
+        -I ${tumor_bam} -R ${ref_fasta} \
+        ${"-L " + intervals} \
+        -alt-table "$tumor_name-alt.tsv" \
+        -ref-hist "$tumor_name-ref.metrics" \
+        -alt-hist "$tumor_name-alt-depth1.metrics"
+    }
+
+    runtime {
+        docker: gatk_docker
+        bootDiskSizeGb: 12
+        memory: machine_mem + " MB"
+        disks: "local-disk " + select_first([disk_space, 100]) + if use_ssd then " SSD" else " HDD"
+        preemptible: select_first([preemptible_attempts, 10])
+        maxRetries: select_first([max_retries, 3])
+        cpu: select_first([cpu, 1])
+    }
+
+    output {
+        File alt_table = glob("*-alt.tsv")[0]
+        File ref_histogram = glob("*-ref.metrics")[0]
+        File alt_histograms = glob("*-alt-depth1.metrics")[0]
+        String tumor_sample = read_string("tumor_name.txt")
+    }
+}
+
+# Learning step of the orientation bias mixture model, which is the recommended orientation bias filter as of September 2018
+task LearnReadOrientationModel {
+    File alt_table
+    File ref_histogram
+    File? alt_histograms
+
+    File? gatk_override
+    File? intervals
+    String tumor_sample
+
+    # runtime
+    Int? max_retries
+    String gatk_docker
+    Int? mem
+    Int? preemptible_attempts
+    Int? disk_space
+    Int? cpu
+    Boolean use_ssd = false
+
+    # Mem is in units of GB but our command and memory runtime values are in MB
+    Int machine_mem = if defined(mem) then mem * 1000 else 8000
+    Int command_mem = machine_mem - 1000
+
+    command {
+        set -e
+        export GATK_LOCAL_JAR=${default="/root/gatk.jar" gatk_override}
+
+        gatk --java-options "-Xmx${command_mem}m" LearnReadOrientationModel \
+        -alt-table ${alt_table} \
+        -ref-hist ${ref_histogram} \
+        -alt-hist ${alt_histograms} \
+        -O "${tumor_sample}-artifact-prior-table.tsv"
+    }
+
+    runtime {
+        docker: gatk_docker
+        bootDiskSizeGb: 12
+        memory: machine_mem + " MB"
+        disks: "local-disk " + select_first([disk_space, 100]) + if use_ssd then " SSD" else " HDD"
+        preemptible: select_first([preemptible_attempts, 10])
+        maxRetries: select_first([max_retries, 3])
+        cpu: select_first([cpu, 1])
+    }
+
+    output {
+        File artifact_prior_table = "${tumor_sample}-artifact-prior-table.tsv"
+    }
+
 }
 
 task CalculateContamination {
@@ -1013,6 +1168,7 @@ task FuncotateMaf {
      File? transcript_selection_list
      Array[String]? annotation_defaults
      Array[String]? annotation_overrides
+     Array[String]? funcotator_excluded_fields
      Boolean filter_funcotations
      File? interval_list
 
@@ -1023,6 +1179,7 @@ task FuncotateMaf {
      String annotation_def_arg = if defined(annotation_defaults) then " --annotation-default " else ""
      String annotation_over_arg = if defined(annotation_overrides) then " --annotation-override " else ""
      String filter_funcotations_args = if (filter_funcotations) then " --remove-filtered-variants " else ""
+     String excluded_fields_args = if defined(funcotator_excluded_fields) then " --exclude-field " else ""
      String final_output_filename = basename(input_vcf, ".vcf") + ".maf.annotated"
      # ==============
 
@@ -1085,6 +1242,7 @@ task FuncotateMaf {
             --annotation-default source:${default="Unknown" sequence_source} \
              ${annotation_def_arg}${default="" sep=" --annotation-default " annotation_defaults} \
              ${annotation_over_arg}${default="" sep=" --annotation-override " annotation_overrides} \
+             ${excluded_fields_args}${default="" sep=" --exclude-field " funcotator_excluded_fields} \
              ${filter_funcotations_args} \
              ${extra_args}
      >>>
