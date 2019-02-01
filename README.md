@@ -47,9 +47,9 @@ Cromwell version support
 #### mutect2 (single pair/sample)  
 - ``Mutect2.gatk4_jar`` -- Location *within the docker file* of the GATK4 jar file.  If you wish you to use a different jar file, such as one on your local filesystem or a google bucket, specify that location with ``Mutect2_Multi.gatk4_jar_override``.  This parameter is ignored if ``Mutect2_Multi.gatk4_jar_override`` is specified.
 - ``Mutect2.intervals`` -- A file listing genomic intervals to search for somatic mutations.  This should be in the standard GATK4 format.
-- ``Mutect2.ref_fasta`` 	-- reference fasta.  For Broad internal VM:  ``/seq/references/Homo_sapiens_assembly19/v1/Homo_sapiens_assembly19.fasta``
-- ``Mutect2.ref_fasta_index`` -- For Broad internal VM:  ``/seq/references/Homo_sapiens_assembly19/v1/Homo_sapiens_assembly19.fasta.fai``
-- ``Mutect2.ref_dict`` -- For Broad internal VM:  ``/seq/references/Homo_sapiens_assembly19/v1/Homo_sapiens_assembly19.dict``
+- ``Mutect2.ref_fasta`` 	-- reference fasta.  In google bucket:  ``gs://gatk-best-practices/somatic-b37/Homo_sapiens_assembly19.fasta``
+- ``Mutect2.ref_fasta_index`` -- In google bucket:  ``gs://gatk-best-practices/somatic-b37/Homo_sapiens_assembly19.fasta.fai``
+- ``Mutect2.ref_dict`` -- In google bucket:  ``gs://gatk-best-practices/somatic-b37/Homo_sapiens_assembly19.dict``
 - ``Mutect2.tumor_bam`` -- File path or storage location (depending on backend) of the tumor bam file.
 - ``Mutect2.tumor_bam_index`` -- File path or storage location (depending on backend) of the tumor bam file index.
 - ``Mutect2.normal_bam`` -- (optional) File path or storage location (depending on backend) of the normal bam file.
