@@ -40,7 +40,7 @@ Used to validate mutect2 workflow.
 - GATK4 or later 
 
 Cromwell version support 
-- Successfully tested on v31
+- Successfully tested on v36
 
 
 ### Parameter descriptions :
