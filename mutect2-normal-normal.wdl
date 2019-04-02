@@ -11,7 +11,7 @@
 ## - False Positive VCF files and its index with summary
 ##
 ## Cromwell version support
-## - Successfully tested on v30
+## - Successfully tested on v36
 ##
 ## LICENSING :
 ## This script is released under the WDL source code license (BSD-3) (see LICENSE in
@@ -21,7 +21,7 @@
 ## pages at https://hub.docker.com/r/broadinstitute/* for detailed licensing information
 ## pertaining to the included programs.
 
-import "https://raw.githubusercontent.com/gatk-workflows/gatk4-somatic-snvs-indels/2.3.0/mutect2_nio.wdl" as m2
+import "https://raw.githubusercontent.com/gatk-workflows/gatk4-somatic-snvs-indels/dev/mutect2_nio.wdl" as m2
 
 workflow Mutect2NormalNormal {
 	File? intervals
@@ -37,23 +37,23 @@ workflow Mutect2NormalNormal {
 	Boolean? run_orientation_bias_filter
 	Array[String]? artifact_modes
 	File? realignment_index_bundle
-    String? realignment_extra_args
+	String? realignment_extra_args
 	String? m2_extra_args
-    String? m2_extra_filtering_args
-    Boolean? make_bamout
+	String? m2_extra_filtering_args
+	Boolean? make_bamout
 
-    File? gatk_override
-    String gatk_docker
-    Int? preemptible_attempts
+	File? gatk_override
+	String gatk_docker
+	Int? preemptible_attempts
 
-    Array[Pair[File,File]] bam_pairs = cross(bams, bams)
-    Array[Pair[File,File]] bai_pairs = cross(bais, bais)
+	Array[Pair[File,File]] bam_pairs = cross(bams, bams)
+	Array[Pair[File,File]] bai_pairs = cross(bais, bais)
 
 	scatter(n in range(length(bam_pairs))) {
 	    File tumor_bam = bam_pairs[n].left
 	    File normal_bam = bam_pairs[n].right
 	    File tumor_bai = bai_pairs[n].left
-        File normal_bai = bai_pairs[n].right
+            File normal_bai = bai_pairs[n].right
 
         if (tumor_bam != normal_bam) {
             call m2.Mutect2 {
@@ -62,10 +62,10 @@ workflow Mutect2NormalNormal {
                     ref_fasta = ref_fasta,
                     ref_fai = ref_fai,
                     ref_dict = ref_dict,
-                    tumor_bam = tumor_bam,
-                    tumor_bai = tumor_bai,
-                    normal_bam = normal_bam,
-                    normal_bai = normal_bai,
+                    tumor_reads = tumor_bam,
+                    tumor_reads_index = tumor_bai,
+                    normal_reads = normal_bam,
+                    normal_reads_index = normal_bai,
                     pon = pon,
                     scatter_count = scatter_count,
                     gnomad = gnomad,
