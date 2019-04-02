@@ -9,7 +9,7 @@
 #  m2_extra_args: additional command line parameters for Mutect2.  This should not involve --max-mnp-distance,
 #  which the wdl hard-codes to 0 because GenpmicsDBImport can't handle MNPs
 
-import "https://raw.githubusercontent.com/gatk-workflows/gatk4-somatic-snvs-indels/2.3.0/mutect2_nio.wdl" as m2
+import "https://raw.githubusercontent.com/gatk-workflows/gatk4-somatic-snvs-indels/dev/mutect2_nio.wdl" as m2
 
 workflow Mutect2_Panel {
     # inputs
