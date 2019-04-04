@@ -52,7 +52,7 @@ workflow Mutect2_Panel {
                 gatk_docker = gatk_docker,
                 preemptible_attempts = preemptible_attempts,
                 max_retries = max_retries,
-                run_ob_filter = false
+                run_orientation_bias_mixture_model_filter = false
         }
     }
 

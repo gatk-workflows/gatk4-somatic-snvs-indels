@@ -34,7 +34,7 @@ workflow Mutect2NormalNormal {
 	File? pon
 	File? gnomad
 	File? variants_for_contamination
-	Boolean? run_orientation_bias_filter
+	Boolean? run_orientation_bias_mixture_model_filter
 	Array[String]? artifact_modes
 	File? realignment_index_bundle
 	String? realignment_extra_args
@@ -70,7 +70,7 @@ workflow Mutect2NormalNormal {
                     scatter_count = scatter_count,
                     gnomad = gnomad,
                     variants_for_contamination = variants_for_contamination,
-                    run_ob_filter = run_orientation_bias_filter,
+                    run_orientation_bias_mixture_model_filter = run_orientation_bias_mixture_model_filter,
                     preemptible_attempts = preemptible_attempts,
                     artifact_modes = artifact_modes,
                     realignment_index_bundle = realignment_index_bundle,
