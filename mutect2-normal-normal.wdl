@@ -35,7 +35,6 @@ workflow Mutect2NormalNormal {
 	File? gnomad
 	File? variants_for_contamination
 	Boolean? run_orientation_bias_mixture_model_filter
-	Array[String]? artifact_modes
 	File? realignment_index_bundle
 	String? realignment_extra_args
 	String? m2_extra_args
