@@ -72,7 +72,6 @@ workflow Mutect2NormalNormal {
                     variants_for_contamination = variants_for_contamination,
                     run_orientation_bias_mixture_model_filter = run_orientation_bias_mixture_model_filter,
                     preemptible_attempts = preemptible_attempts,
-                    artifact_modes = artifact_modes,
                     realignment_index_bundle = realignment_index_bundle,
                     realignment_extra_args = realignment_extra_args,
                     m2_extra_args = m2_extra_args,
@@ -88,7 +87,7 @@ workflow Mutect2NormalNormal {
                     ref_fai = ref_fai,
                     ref_dict = ref_dict,
                     filtered_vcf = Mutect2.filtered_vcf,
-                    filtered_vcf_index = Mutect2.filtered_vcf_index,
+                    filtered_vcf_index = Mutect2.filtered_vcf_idx,
                     gatk_override = gatk_override,
                     gatk_docker = gatk_docker
             }
@@ -100,7 +99,7 @@ workflow Mutect2NormalNormal {
 	output {
 		File summary = GatherTables.summary
 		Array[File] false_positives_vcfs = select_all(Mutect2.filtered_vcf)
-		Array[File] false_positives_vcf_indices = select_all(Mutect2.filtered_vcf_index)
+		Array[File] false_positives_vcf_indices = select_all(Mutect2.filtered_vcf_idx)
 	}
 }
 
