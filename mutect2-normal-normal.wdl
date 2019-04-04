@@ -70,7 +70,7 @@ workflow Mutect2NormalNormal {
                     scatter_count = scatter_count,
                     gnomad = gnomad,
                     variants_for_contamination = variants_for_contamination,
-                    run_orientation_bias_filter = run_orientation_bias_filter,
+                    run_ob_filter = run_orientation_bias_filter,
                     preemptible_attempts = preemptible_attempts,
                     artifact_modes = artifact_modes,
                     realignment_index_bundle = realignment_index_bundle,
