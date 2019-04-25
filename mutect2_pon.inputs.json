@@ -46,10 +46,9 @@
   "#Mutect2_Panel.Mutect2.make_bamout": "(optional) Boolean?",
   "#Mutect2_Panel.Mutect2.run_funcotator": "(optional) Boolean?",
   "#Mutect2_Panel.Mutect2.compress_vcfs": "(optional) Boolean?",
-  "#Mutect2_Panel.Mutect2.run_orientation_bias_filter": "(optional) Boolean?",
 
   "##_COMMENT6": "Docker",
-  "Mutect2_Panel.gatk_docker": "broadinstitute/gatk:4.1.1.0",
+  "Mutect2_Panel.gatk_docker": "broadinstitute/gatk:4.1.2.0",
   "#Mutect2_Panel.Mutect2.oncotator_docker": "(optional) String?",
 
   "##_COMMENT7": "Disk space",

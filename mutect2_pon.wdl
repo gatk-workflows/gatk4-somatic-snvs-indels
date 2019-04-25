@@ -9,7 +9,7 @@
 #  m2_extra_args: additional command line parameters for Mutect2.  This should not involve --max-mnp-distance,
 #  which the wdl hard-codes to 0 because GenpmicsDBImport can't handle MNPs
 
-import "https://raw.githubusercontent.com/gatk-workflows/gatk4-somatic-snvs-indels/2.4.0/mutect2_nio.wdl" as m2
+import "https://raw.githubusercontent.com/gatk-workflows/gatk4-somatic-snvs-indels/2.5.0/mutect2_nio.wdl" as m2
 
 workflow Mutect2_Panel {
     # inputs
@@ -44,15 +44,14 @@ workflow Mutect2_Panel {
                 ref_fasta = ref_fasta,
                 ref_fai = ref_fai,
                 ref_dict = ref_dict,
-                tumor_reads = normal_bam.left,
-                tumor_reads_index = normal_bam.right,
+                tumor_bam = normal_bam.left,
+                tumor_bai = normal_bam.right,
                 scatter_count = scatter_count,
                 m2_extra_args = select_first([m2_extra_args, ""]) + "--max-mnp-distance 0",
                 gatk_override = gatk_override,
                 gatk_docker = gatk_docker,
                 preemptible_attempts = preemptible_attempts,
-                max_retries = max_retries,
-                run_orientation_bias_mixture_model_filter = false
+                max_retries = max_retries
         }
     }
 
@@ -99,9 +98,9 @@ workflow Mutect2_Panel {
 
     output {
         File pon = MergeVCFs.merged_vcf
-        File pon_idx = MergeVCFs.merged_vcf_idx
+        File pon_idx = MergeVCFs.merged_vcf_index
         Array[File] normal_calls = Mutect2.filtered_vcf
-        Array[File] normal_calls_idx = Mutect2.filtered_vcf_idx
+        Array[File] normal_calls_idx = Mutect2.filtered_vcf_index
     }
 }
 
