@@ -98,9 +98,9 @@ workflow Mutect2_Panel {
 
     output {
         File pon = MergeVCFs.merged_vcf
-        File pon_idx = MergeVCFs.merged_vcf_index
+        File pon_idx = MergeVCFs.merged_vcf_idx
         Array[File] normal_calls = Mutect2.filtered_vcf
-        Array[File] normal_calls_idx = Mutect2.filtered_vcf_index
+        Array[File] normal_calls_idx = Mutect2.filtered_vcf_idx
     }
 }
 
