@@ -1,7 +1,7 @@
 {
   "##_COMMENT1": "Inputs",
-  "Mutect2_Panel.normal_bams": "Array[File]",
-  "Mutect2_Panel.normal_bais": "Array[File]",
+  "Mutect2_Panel.normal_reads": "Array[File]",
+  "Mutect2_Panel.normal_reads_index": "Array[File]",
   "Mutect2_Panel.pon_name": "String",
   "#Mutect2_Panel.Mutect2.normal_bam": "(optional) File?",
   "#Mutect2_Panel.Mutect2.normal_bai": "(optional) File?",
@@ -46,10 +46,9 @@
   "#Mutect2_Panel.Mutect2.make_bamout": "(optional) Boolean?",
   "#Mutect2_Panel.Mutect2.run_funcotator": "(optional) Boolean?",
   "#Mutect2_Panel.Mutect2.compress_vcfs": "(optional) Boolean?",
-  "#Mutect2_Panel.Mutect2.run_orientation_bias_filter": "(optional) Boolean?",
 
   "##_COMMENT6": "Docker",
-  "Mutect2_Panel.gatk_docker": "broadinstitute/gatk:4.0.8.1",
+  "Mutect2_Panel.gatk_docker": "broadinstitute/gatk:4.1.2.0",
   "#Mutect2_Panel.Mutect2.oncotator_docker": "(optional) String?",
 
   "##_COMMENT7": "Disk space",
