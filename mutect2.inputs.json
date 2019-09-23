@@ -1,7 +1,6 @@
 {
   "##_COMMENT1": "Runtime",
-  "##Mutect2.oncotator_docker": "(optional) String?",
-  "Mutect2.gatk_docker": "broadinstitute/gatk:4.1.2.0",
+  "Mutect2.gatk_docker": "broadinstitute/gatk:4.1.3.0",
 
   "##_COMMENT2": "Workflow options",
   "Mutect2.intervals": "gs://gatk-best-practices/somatic-b37/whole_exome_agilent_1.1_refseq_plus_3_boosters.Homo_sapiens_assembly19.baits.interval_list",
@@ -33,35 +32,7 @@
   "##_COMMENT5": "Secondary resources",
   "Mutect2.onco_ds_tar_gz": "gs://gatk-best-practices/somatic-b37/oncotator_v1_ds_April052016.tar.gz",
   "Mutect2.default_config_file": "gs://gatk-best-practices/somatic-b37/onco_config.txt",
-  "##_Mutect2.sequencing_center": "(optional) String?",
-  "##_Mutect2.sequence_source": "(optional) String?",
 
-  "##_COMMENT6": "Secondary resources",
-  "##_Mutect2.MergeBamOuts.mem": "(optional) Int?",
-  "##_Mutect2.SplitIntervals.mem": "(optional) Int?",
-  "##_Mutect2.M2.mem": "(optional) Int?",
-  "##_Mutect2.MergeVCFs.mem": "(optional) Int?",
-  "##_Mutect2.oncotate_m2.mem": "(optional) Int?",
-      
-  "##_COMMENT7": "Secondary resources",
-  "##_Mutect2.onco_ds_local_db_dir": "(optional) String?",
-  "##_Mutect2.sequencing_center": "(optional) String?",
-  "##_Mutect2.oncotate_m2.oncotator_exe": "(optional) String?",
-  "##_Mutect2.gatk4_override": "(optional) File?",
-  "##_Mutect2.CollectSequencingArtifactMetrics.mem": "(optional) Int?",
-
-  "##_COMMENT8": "Disk space",
-  "##_Mutect2.MergeVCFs.disk_space_gb": "(optional) Int?",
-  "##_Mutect2.Filter.disk_space_gb": "(optional) Int?",
-  "##_Mutect2.M2.disk_space_gb": "(optional) Int?",
-  "##_Mutect2.M2.disk_space_gb": 100,
-  "##_Mutect2.oncotate_m2.disk_space_gb": "(optional) Int?",
-  "##_Mutect2.SplitIntervals.disk_space_gb": "(optional) Int?",
-  "##_Mutect2.MergeBamOuts.disk_space_gb": "(optional) Int?",
-  "##_Mutect2.CollectSequencingArtifactMetrics.disk_space_gb": "(optional) Int?",
-  "##_Mutect2.emergency_extra_disk": "(optional) Int?",  
-  
   "##_COMMENT9": "Preemptibles",
-  "##_Mutect2.MergeBamOuts.preemptible_attempts": "(optional) Int?",
   "Mutect2.preemptible_attempts": 3
 }

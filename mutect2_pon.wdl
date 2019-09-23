@@ -1,3 +1,5 @@
+version 1.0
+
 #  Create a Mutect2 panel of normals
 #
 #  Description of inputs
@@ -9,18 +11,20 @@
 #  m2_extra_args: additional command line parameters for Mutect2.  This should not involve --max-mnp-distance,
 #  which the wdl hard-codes to 0 because GenpmicsDBImport can't handle MNPs
 
-import "https://raw.githubusercontent.com/gatk-workflows/gatk4-somatic-snvs-indels/2.5.0/mutect2_nio.wdl" as m2
+#import "mutect2.wdl" as m2
+
+import "https://github.com/gatk-workflows/gatk4-somatic-snvs-indels/blob/dev/mutect2.wdl" as m2
 
 workflow Mutect2_Panel {
-    # inputs
-	File? intervals
-	File ref_fasta
-	File ref_fai
-	File ref_dict
-	Int scatter_count
-	Array[String] normal_bams
-	Array[String] normal_bais
-	String gnomad
+  input {
+    File? intervals
+    File ref_fasta
+    File ref_fai
+    File ref_dict
+    Int scatter_count
+    Array[String] normal_bams
+    Array[String] normal_bais
+    String gnomad
     String? m2_extra_args
     String? create_pon_extra_args
     Boolean? compress
@@ -28,7 +32,6 @@ workflow Mutect2_Panel {
 
     Int? min_contig_size
     Int? num_contigs
-    Int contig_size = select_first([min_contig_size, 1000000])
 
     File? gatk_override
 
@@ -36,6 +39,9 @@ workflow Mutect2_Panel {
     String gatk_docker
     Int? preemptible_attempts
     Int? max_retries
+  }
+
+  Int contig_size = select_first([min_contig_size, 1000000])
 
     scatter (normal_bam in zip(normal_bams, normal_bais)) {
         call m2.Mutect2 {
@@ -105,36 +111,37 @@ workflow Mutect2_Panel {
 }
 
 task CreatePanel {
-    # inputs
-    File intervals
-    Array[String] input_vcfs
-    File ref_fasta
-    File ref_fai
-    File ref_dict
-    String output_vcf_name
-    String gnomad
-    String? create_pon_extra_args
+    input {
+      File intervals
+      Array[String] input_vcfs
+      File ref_fasta
+      File ref_fai
+      File ref_dict
+      String output_vcf_name
+      String gnomad
+      String? create_pon_extra_args
 
-    File? gatk_override
+      File? gatk_override
 
-    # runtime
-    String gatk_docker
-    Int? mem
-    Int? preemptible_attempts
-    Int? max_retries
-    Int? disk_space
+      # runtime
+      String gatk_docker
+      Int? mem
+      Int? preemptible_attempts
+      Int? max_retries
+      Int? disk_space
+    }
 
     Int machine_mem = select_first([mem, 8])
     Int command_mem = machine_mem - 1
 
     command {
         set -e
-        export GATK_LOCAL_JAR=${default="/root/gatk.jar" gatk_override}
+        export GATK_LOCAL_JAR=~{default="/root/gatk.jar" gatk_override}
 
-        gatk GenomicsDBImport --genomicsdb-workspace-path pon_db -R ${ref_fasta} -V ${sep=' -V ' input_vcfs} -L ${intervals}
+        gatk GenomicsDBImport --genomicsdb-workspace-path pon_db -R ~{ref_fasta} -V ~{sep=' -V ' input_vcfs} -L ~{intervals}
 
-        gatk --java-options "-Xmx${command_mem}g"  CreateSomaticPanelOfNormals -R ${ref_fasta} --germline-resource ${gnomad} \
-            -V gendb://pon_db -O ${output_vcf_name}.vcf ${create_pon_extra_args}
+        gatk --java-options "-Xmx~{command_mem}g"  CreateSomaticPanelOfNormals -R ~{ref_fasta} --germline-resource ~{gnomad} \
+            -V gendb://pon_db -O ~{output_vcf_name}.vcf ~{create_pon_extra_args}
     }
 
     runtime {
@@ -147,7 +154,7 @@ task CreatePanel {
     }
 
     output {
-        File output_vcf = "${output_vcf_name}.vcf"
-        File output_vcf_index = "${output_vcf_name}.vcf.idx"
+        File output_vcf = "~{output_vcf_name}.vcf"
+        File output_vcf_index = "~{output_vcf_name}.vcf.idx"
     }
 }
