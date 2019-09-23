@@ -4,8 +4,7 @@
 Workflows for somatic short variant analysis with GATK4. 
 
 ### mutect2 :
-Implements Somatic short variant discovery using [GATK Best Practices](https://software.broadinstitute.org/gatk/best-practices/workflow).
-Note: Also provided in this repo is mutect2_nio which is a NIO supported version of the wdl.  
+Implements Somatic short variant discovery using [GATK Best Practices](https://software.broadinstitute.org/gatk/best-practices/workflow).  
 
 #### Requirements/expectations
 - Tumor bam and index
@@ -37,10 +36,10 @@ Used to validate mutect2 workflow.
 - False Positive VCF files and its index with summary  
      
 ### Software version requirements :
-- GATK4.1.2.0 
+- GATK4.1.3.0 
 
 Cromwell version support 
-- Successfully tested on v36
+- Successfully tested on v46
 
 
 ### Parameter descriptions :
