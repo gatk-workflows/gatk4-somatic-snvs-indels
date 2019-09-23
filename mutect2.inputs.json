@@ -1,17 +1,14 @@
 {
-  "##_COMMENT1": "Runtime",
   "Mutect2.gatk_docker": "broadinstitute/gatk:4.1.3.0",
 
-  "##_COMMENT2": "Workflow options",
   "Mutect2.intervals": "gs://gatk-best-practices/somatic-b37/whole_exome_agilent_1.1_refseq_plus_3_boosters.Homo_sapiens_assembly19.baits.interval_list",
   "Mutect2.scatter_count": 50,
-  "Mutect2.artifact_modes": ["G/T", "C/T"],
-  "##_Mutect2.m2_extra_args": "(optional) String?",
-  "##_Mutect2.m2_extra_filtering_args": "(optional) String?",
-  "Mutect2.run_orientation_bias_filter": "False",
-  "Mutect2.run_oncotator": "False",
+  "Mutect2.m2_extra_args": "--downsampling-stride 20 --max-reads-per-alignment-start 6 --max-suspicious-reads-per-alignment-start 6",
+  "Mutect2.filter_funcotations": "True",
+  "Mutect2.funco_reference_version": "hg19",
+  "Mutect2.funco_data_sources_tar_gz": "gs://broad-public-datasets/funcotator/funcotator_dataSources.v1.6.20190124s.tar.gz",
+  "Mutect2.funco_transcript_selection_list": "gs://broad-public-datasets/funcotator/transcriptList.exact_uniprot_matches.AKT1_CRLF2_FGFR1.txt",
 
-  "##_COMMENT3": "Primary inputs",
   "Mutect2.ref_fasta": "gs://gatk-best-practices/somatic-b37/Homo_sapiens_assembly19.fasta",
   "Mutect2.ref_dict": "gs://gatk-best-practices/somatic-b37/Homo_sapiens_assembly19.dict",
   "Mutect2.ref_fai": "gs://gatk-best-practices/somatic-b37/Homo_sapiens_assembly19.fasta.fai",
@@ -20,19 +17,12 @@
   "Mutect2.tumor_reads": "gs://gatk-best-practices/somatic-b37/HCC1143.bam",
   "Mutect2.tumor_reads_index": "gs://gatk-best-practices/somatic-b37/HCC1143.bai",
 
-  "##_COMMENT4": "Primary resources",
   "Mutect2.pon": "gs://gatk-best-practices/somatic-b37/Mutect2-exome-panel.vcf",
   "Mutect2.pon_idx": "gs://gatk-best-practices/somatic-b37/Mutect2-exome-panel.vcf.idx",
   "Mutect2.gnomad": "gs://gatk-best-practices/somatic-b37/af-only-gnomad.raw.sites.vcf",
   "Mutect2.gnomad_idx": "gs://gatk-best-practices/somatic-b37/af-only-gnomad.raw.sites.vcf.idx",
   "Mutect2.variants_for_contamination": "gs://gatk-best-practices/somatic-b37/small_exac_common_3.vcf",
   "Mutect2.variants_for_contamination_idx": "gs://gatk-best-practices/somatic-b37/small_exac_common_3.vcf.idx",
-  "##Mutect2.realignment_index_bundle": "File? (optional)",
+  "Mutect2.realignment_index_bundle": "gs://gatk-test-data/mutect2/Homo_sapiens_assembly38.index_bundle"
 
-  "##_COMMENT5": "Secondary resources",
-  "Mutect2.onco_ds_tar_gz": "gs://gatk-best-practices/somatic-b37/oncotator_v1_ds_April052016.tar.gz",
-  "Mutect2.default_config_file": "gs://gatk-best-practices/somatic-b37/onco_config.txt",
-
-  "##_COMMENT9": "Preemptibles",
-  "Mutect2.preemptible_attempts": 3
 }
