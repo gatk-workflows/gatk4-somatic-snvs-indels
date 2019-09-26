@@ -67,9 +67,7 @@ workflow Mutect2_Panel {
             ref_fai = ref_fai,
             ref_dict = ref_dict,
             scatter_count = select_first([num_contigs, 24]),
-            split_intervals_extra_args = "--subdivision-mode BALANCING_WITHOUT_INTERVAL_SUBDIVISION --min-contig-size " + contig_size,
-            gatk_override = gatk_override,
-            gatk_docker = gatk_docker
+            split_intervals_extra_args = "--subdivision-mode BALANCING_WITHOUT_INTERVAL_SUBDIVISION --min-contig-size " + contig_size
     }
 
     scatter (subintervals in SplitIntervals.interval_files ) {
@@ -95,11 +93,7 @@ workflow Mutect2_Panel {
             input_vcfs = CreatePanel.output_vcf,
             input_vcf_indices = CreatePanel.output_vcf_index,
             output_name = pon_name,
-            compress = select_first([compress, false]),
-            gatk_override = gatk_override,
-            gatk_docker = gatk_docker,
-            preemptible = preemptible,
-            max_retries = max_retries
+            compress = select_first([compress, false])
     }
 
     output {
