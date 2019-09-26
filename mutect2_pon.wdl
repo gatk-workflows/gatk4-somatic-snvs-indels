@@ -42,6 +42,11 @@ workflow Mutect2_Panel {
   }
 
   Int contig_size = select_first([min_contig_size, 1000000])
+  
+  Runtime standard_runtime = {"gatk_docker": gatk_docker, "gatk_override": gatk_override,
+          "max_retries": max_retries_or_default, "preemptible": preemptible_or_default, "cpu": small_task_cpu,
+          "machine_mem": small_task_mem * 1000, "command_mem": small_task_mem * 1000 - 500,
+          "disk": small_task_disk + disk_pad, "boot_disk_size": boot_disk_size}
 
     scatter (normal_bam in zip(normal_bams, normal_bais)) {
         call m2.Mutect2 {
@@ -67,7 +72,8 @@ workflow Mutect2_Panel {
             ref_fai = ref_fai,
             ref_dict = ref_dict,
             scatter_count = select_first([num_contigs, 24]),
-            split_intervals_extra_args = "--subdivision-mode BALANCING_WITHOUT_INTERVAL_SUBDIVISION --min-contig-size " + contig_size
+            split_intervals_extra_args = "--subdivision-mode BALANCING_WITHOUT_INTERVAL_SUBDIVISION --min-contig-size " + contig_size,
+            runtime_params = standard_runtime
     }
 
     scatter (subintervals in SplitIntervals.interval_files ) {
