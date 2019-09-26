@@ -15,6 +15,18 @@ version 1.0
 
 import "https://raw.githubusercontent.com/gatk-workflows/gatk4-somatic-snvs-indels/dev/mutect2.wdl" as m2
 
+struct Runtime {
+    String gatk_docker
+    File? gatk_override
+    Int max_retries
+    Int preemptible
+    Int cpu
+    Int machine_mem
+    Int command_mem
+    Int disk
+    Int boot_disk_size
+}
+
 workflow Mutect2_Panel {
   input {
     File? intervals
@@ -33,16 +45,33 @@ workflow Mutect2_Panel {
     Int? min_contig_size
     Int? num_contigs
 
-    File? gatk_override
-
-    # runtime
+    # runtime     
     String gatk_docker
+    File? gatk_override
+    String basic_bash_docker = "ubuntu:16.04"
+
     Int? preemptible
     Int? max_retries
+    Int small_task_cpu = 2
+    Int small_task_mem = 4
+    Int small_task_disk = 100
+    Int boot_disk_size = 12
+
+    # Use as a last resort to increase the disk given to every task in case of ill behaving data
+    Int? emergency_extra_disk
+
   }
 
-  Int contig_size = select_first([min_contig_size, 1000000])
-  
+    Int contig_size = select_first([min_contig_size, 1000000])
+    Int preemptible_or_default = select_first([preemptible, 2])
+    Int max_retries_or_default = select_first([max_retries, 2])
+
+    # If no tar is provided, the task downloads one from broads ftp server
+    Int gatk_override_size = if defined(gatk_override) then ceil(size(gatk_override, "GB")) else 0
+
+    # This is added to every task as padding, should increase if systematically you need more disk for every call
+    Int disk_pad = 10 + gatk_override_size + select_first([emergency_extra_disk,0])
+ 
   Runtime standard_runtime = {"gatk_docker": gatk_docker, "gatk_override": gatk_override,
           "max_retries": max_retries_or_default, "preemptible": preemptible_or_default, "cpu": small_task_cpu,
           "machine_mem": small_task_mem * 1000, "command_mem": small_task_mem * 1000 - 500,
