@@ -72,7 +72,7 @@ workflow Mutect2_Panel {
     # This is added to every task as padding, should increase if systematically you need more disk for every call
     Int disk_pad = 10 + gatk_override_size + select_first([emergency_extra_disk,0])
  
-  Runtime standard_runtime = {"gatk_docker": gatk_docker, "gatk_override": gatk_override,
+    Runtime standard_runtime = {"gatk_docker": gatk_docker, "gatk_override": gatk_override,
           "max_retries": max_retries_or_default, "preemptible": preemptible_or_default, "cpu": small_task_cpu,
           "machine_mem": small_task_mem * 1000, "command_mem": small_task_mem * 1000 - 500,
           "disk": small_task_disk + disk_pad, "boot_disk_size": boot_disk_size}
