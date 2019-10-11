@@ -13,7 +13,7 @@ version 1.0
 
 #import "mutect2.wdl" as m2
 
-import "https://raw.githubusercontent.com/gatk-workflows/gatk4-somatic-snvs-indels/dev/mutect2.wdl" as m2
+import "https://raw.githubusercontent.com/gatk-workflows/gatk4-somatic-snvs-indels/2.6.0/mutect2.wdl" as m2
 
 workflow Mutect2_Panel {
   input {

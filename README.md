@@ -36,7 +36,7 @@ Used to validate mutect2 workflow.
 - False Positive VCF files and its index with summary  
      
 ### Software version requirements :
-- GATK4.1.3.0 
+- GATK4.1.4.0 
 
 Cromwell version support 
 - Successfully tested on v46
