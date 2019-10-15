@@ -1,3 +1,5 @@
+version 1.0
+
 #  Create a Mutect2 panel of normals
 #
 #  Description of inputs
@@ -9,18 +11,21 @@
 #  m2_extra_args: additional command line parameters for Mutect2.  This should not involve --max-mnp-distance,
 #  which the wdl hard-codes to 0 because GenpmicsDBImport can't handle MNPs
 
-import "https://raw.githubusercontent.com/gatk-workflows/gatk4-somatic-snvs-indels/2.5.0/mutect2_nio.wdl" as m2
+#import "mutect2.wdl" as m2
+
+import "https://raw.githubusercontent.com/gatk-workflows/gatk4-somatic-snvs-indels/2.6.0/mutect2.wdl" as m2
 
 workflow Mutect2_Panel {
-    # inputs
-	File? intervals
-	File ref_fasta
-	File ref_fai
-	File ref_dict
-	Int scatter_count
-	Array[String] normal_bams
-	Array[String] normal_bais
-	String gnomad
+  input {
+    File? intervals
+    File ref_fasta
+    File ref_fai
+    File ref_dict
+    Int scatter_count
+    Array[String] normal_bams
+    Array[String] normal_bais
+    File gnomad
+    File gnomad_idx
     String? m2_extra_args
     String? create_pon_extra_args
     Boolean? compress
@@ -28,14 +33,31 @@ workflow Mutect2_Panel {
 
     Int? min_contig_size
     Int? num_contigs
-    Int contig_size = select_first([min_contig_size, 1000000])
-
-    File? gatk_override
 
     # runtime
     String gatk_docker
-    Int? preemptible_attempts
+    File? gatk_override
+    String basic_bash_docker = "ubuntu:16.04"
+
+    Int? preemptible
     Int? max_retries
+    Int small_task_cpu = 2
+    Int small_task_mem = 4
+    Int small_task_disk = 100
+    Int boot_disk_size = 12
+
+    # Use as a last resort to increase the disk given to every task in case of ill behaving data
+    Int? emergency_extra_disk
+  }
+
+  Int contig_size = select_first([min_contig_size, 1000000])
+  Int preemptible_or_default = select_first([preemptible, 2])
+  Int max_retries_or_default = select_first([max_retries, 2])
+
+  Runtime standard_runtime = {"gatk_docker": gatk_docker, "gatk_override": gatk_override,
+            "max_retries": max_retries_or_default, "preemptible": preemptible_or_default, "cpu": small_task_cpu,
+            "machine_mem": small_task_mem * 1000, "command_mem": small_task_mem * 1000 - 500,
+            "disk": small_task_disk, "boot_disk_size": boot_disk_size}
 
     scatter (normal_bam in zip(normal_bams, normal_bais)) {
         call m2.Mutect2 {
@@ -50,7 +72,7 @@ workflow Mutect2_Panel {
                 m2_extra_args = select_first([m2_extra_args, ""]) + "--max-mnp-distance 0",
                 gatk_override = gatk_override,
                 gatk_docker = gatk_docker,
-                preemptible_attempts = preemptible_attempts,
+                preemptible = preemptible,
                 max_retries = max_retries
         }
     }
@@ -62,8 +84,7 @@ workflow Mutect2_Panel {
             ref_dict = ref_dict,
             scatter_count = select_first([num_contigs, 24]),
             split_intervals_extra_args = "--subdivision-mode BALANCING_WITHOUT_INTERVAL_SUBDIVISION --min-contig-size " + contig_size,
-            gatk_override = gatk_override,
-            gatk_docker = gatk_docker
+            runtime_params = standard_runtime
     }
 
     scatter (subintervals in SplitIntervals.interval_files ) {
@@ -75,12 +96,10 @@ workflow Mutect2_Panel {
                     ref_fai = ref_fai,
                     ref_dict = ref_dict,
                     gnomad = gnomad,
+                    gnomad_idx = gnomad_idx,
                     output_vcf_name = pon_name,
                     create_pon_extra_args = create_pon_extra_args,
-                    gatk_override = gatk_override,
-                    preemptible_attempts = preemptible_attempts,
-                    max_retries = max_retries,
-                    gatk_docker = gatk_docker
+                    runtime_params = standard_runtime
             }
     }
 
@@ -90,10 +109,7 @@ workflow Mutect2_Panel {
             input_vcf_indices = CreatePanel.output_vcf_index,
             output_name = pon_name,
             compress = select_first([compress, false]),
-            gatk_override = gatk_override,
-            gatk_docker = gatk_docker,
-            preemptible_attempts = preemptible_attempts,
-            max_retries = max_retries
+            runtime_params = standard_runtime
     }
 
     output {
@@ -105,49 +121,51 @@ workflow Mutect2_Panel {
 }
 
 task CreatePanel {
-    # inputs
-    File intervals
-    Array[String] input_vcfs
-    File ref_fasta
-    File ref_fai
-    File ref_dict
-    String output_vcf_name
-    String gnomad
-    String? create_pon_extra_args
+    input {
+      File intervals
+      Array[String] input_vcfs
+      File ref_fasta
+      File ref_fai
+      File ref_dict
+      String output_vcf_name
+      File gnomad
+      File gnomad_idx
+      String? create_pon_extra_args
 
-    File? gatk_override
+      # runtime
+      Runtime runtime_params
+    }
 
-    # runtime
-    String gatk_docker
-    Int? mem
-    Int? preemptible_attempts
-    Int? max_retries
-    Int? disk_space
-
-    Int machine_mem = select_first([mem, 8])
+    Int machine_mem = 8
     Int command_mem = machine_mem - 1
+
+        parameter_meta{
+          gnomad: {localization_optional: true}
+          gnomad_idx: {localization_optional: true}
+        }
 
     command {
         set -e
-        export GATK_LOCAL_JAR=${default="/root/gatk.jar" gatk_override}
+        export GATK_LOCAL_JAR=~{default="/root/gatk.jar" runtime_params.gatk_override}
 
-        gatk GenomicsDBImport --genomicsdb-workspace-path pon_db -R ${ref_fasta} -V ${sep=' -V ' input_vcfs} -L ${intervals}
+        gatk GenomicsDBImport --genomicsdb-workspace-path pon_db -R ~{ref_fasta} -V ~{sep=' -V ' input_vcfs} -L ~{intervals}
 
-        gatk --java-options "-Xmx${command_mem}g"  CreateSomaticPanelOfNormals -R ${ref_fasta} --germline-resource ${gnomad} \
-            -V gendb://pon_db -O ${output_vcf_name}.vcf ${create_pon_extra_args}
+        gatk --java-options "-Xmx~{command_mem}g"  CreateSomaticPanelOfNormals -R ~{ref_fasta} --germline-resource ~{gnomad} \
+            -V gendb://pon_db -O ~{output_vcf_name}.vcf ~{create_pon_extra_args}
     }
 
     runtime {
-        docker: gatk_docker
-        bootDiskSizeGb: 12
+        docker: runtime_params.gatk_docker
+        bootDiskSizeGb: runtime_params.boot_disk_size
         memory: machine_mem + " GB"
-        disks: "local-disk " + select_first([disk_space, 100]) + " HDD"
-        preemptible: select_first([preemptible_attempts, 3])
-        maxRetries: select_first([max_retries, 0])
+        disks: "local-disk " + runtime_params.disk + " HDD"
+        preemptible: runtime_params.preemptible
+        maxRetries: runtime_params.max_retries
+        cpu: runtime_params.cpu
     }
 
     output {
-        File output_vcf = "${output_vcf_name}.vcf"
-        File output_vcf_index = "${output_vcf_name}.vcf.idx"
+        File output_vcf = "~{output_vcf_name}.vcf"
+        File output_vcf_index = "~{output_vcf_name}.vcf.idx"
     }
 }
