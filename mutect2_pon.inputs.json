@@ -1,7 +1,7 @@
 {
 	"Mutect2_Panel.pon_name":"panel_of_normal",
-	"Mutect2_Panel.normal_bams":"Array[File]",
-	"Mutect2_Panel.normal_bais":"Array[File]",
+	"Mutect2_Panel.normal_bams":"Array[String]",
+	"Mutect2_Panel.normal_bais":"Array[String]",
 	
 	"Mutect2_Panel.ref_fasta":"gs://gatk-best-practices/somatic-b37/Homo_sapiens_assembly19.fasta",
 	"Mutect2_Panel.ref_fai":"gs://gatk-best-practices/somatic-b37/Homo_sapiens_assembly19.fasta.fai",
@@ -12,5 +12,5 @@
 	"Mutect2_Panel.Mutect2.variants_for_contamination":"gs://gatk-best-practices/somatic-b37/small_exac_common_3.vcf",
 	"Mutect2_Panel.gnomad":"gs://gatk-best-practices/somatic-b37/af-only-gnomad.raw.sites.vcf",
 
-	"Mutect2_Panel.gatk_docker":"broadinstitute/gatk:4.1.4.0"
+	"Mutect2_Panel.gatk_docker":"broadinstitute/gatk:4.1.4.1"
 }
