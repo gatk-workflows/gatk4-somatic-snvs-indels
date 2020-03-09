@@ -732,7 +732,6 @@ task MergeStats {
         set -e
         export GATK_LOCAL_JAR=~{default="/root/gatk.jar" runtime_params.gatk_override}
 
-
         gatk --java-options "-Xmx~{runtime_params.command_mem}m" MergeMutectStats \
             -stats ~{sep=" -stats " stats} -O merged.stats
     }
